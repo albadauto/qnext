@@ -104,7 +104,7 @@ const EventTicket = () => {
                 </div>
 
                 <Link
-                  href="/contato"
+                  href="/contact"
                   className="btn btn-1 hover-filled-slide-down w-full text-center rounded-lg overflow-hidden mt-6"
                 >
                   <span>Falar sobre meu projeto</span>

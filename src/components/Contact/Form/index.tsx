@@ -1,13 +1,65 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 
 const ContactForm = () => {
+  const [formData, setFormData] = useState({
+    nome: "",
+    empresa: "",
+    email: "",
+    whatsapp: "",
+    solucao: "",
+    mensagem: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess(false);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        throw new Error("Erro ao enviar formulário");
+      }
+
+      setSuccess(true);
+      setFormData({
+        nome: "",
+        empresa: "",
+        email: "",
+        whatsapp: "",
+        solucao: "",
+        mensagem: "",
+      });
+    } catch (err) {
+      setError("Não foi possível enviar. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className="dark:bg-darkmode lg:pb-24 pb-16 pt-40">
       <div className="container mx-auto lg:max-w-screen-xl md:max-w-screen-md">
         <div className="grid md:grid-cols-12 grid-cols-1 gap-8 items-center">
-          
+
           {/* FORM */}
           <div className="col-span-6">
             <h2 className="max-w-xl text-[40px] leading-[3.4rem] font-bold mb-6 text-secondary">
@@ -15,34 +67,30 @@ const ContactForm = () => {
             </h2>
 
             <p className="text-lg text-SlateBlueText mb-10">
-              Conte-nos um pouco sobre seu cenário atual. Avaliamos seus
-              processos e indicamos a melhor solução — seja um sistema sob
-              medida, uma automação ou o uso estratégico de Inteligência
-              Artificial.
+              Conte-nos um pouco sobre seu cenário atual.
             </p>
 
-            <form className="flex flex-wrap w-full justify-between">
+            <form onSubmit={handleSubmit} className="flex flex-wrap w-full justify-between">
               {/* NOME / EMPRESA */}
               <div className="sm:flex gap-3 w-full">
                 <div className="my-2.5 flex-1">
-                  <label className="pb-3 inline-block text-base text-SlateBlueText">
-                    Nome*
-                  </label>
+                  <label className="pb-3 inline-block text-base">Nome*</label>
                   <input
-                    type="text"
-                    placeholder="Seu nome"
-                    className="w-full px-4 py-2.5 rounded-lg border border-border dark:border-dark_border dark:bg-darkmode dark:text-white focus:border-primary focus:outline-0"
+                    name="nome"
+                    value={formData.nome}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2.5 rounded-lg border"
                   />
                 </div>
 
                 <div className="my-2.5 flex-1">
-                  <label className="pb-3 inline-block text-base text-SlateBlueText">
-                    Empresa*
-                  </label>
+                  <label className="pb-3 inline-block text-base">Empresa*</label>
                   <input
-                    type="text"
-                    placeholder="Nome da empresa"
-                    className="w-full px-4 py-2.5 rounded-lg border border-border dark:border-dark_border dark:bg-darkmode dark:text-white focus:border-primary focus:outline-0"
+                    name="empresa"
+                    value={formData.empresa}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 rounded-lg border"
                   />
                 </div>
               </div>
@@ -50,35 +98,40 @@ const ContactForm = () => {
               {/* EMAIL / WHATSAPP */}
               <div className="sm:flex gap-3 w-full">
                 <div className="my-2.5 flex-1">
-                  <label className="pb-3 inline-block text-base text-SlateBlueText">
-                    Email corporativo*
-                  </label>
+                  <label className="pb-3 inline-block text-base">Email*</label>
                   <input
                     type="email"
-                    placeholder="seu@email.com"
-                    className="w-full px-4 py-2.5 rounded-lg border border-border dark:border-dark_border dark:bg-darkmode dark:text-white focus:border-primary focus:outline-0"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2.5 rounded-lg border"
                   />
                 </div>
 
                 <div className="my-2.5 flex-1">
-                  <label className="pb-3 inline-block text-base text-SlateBlueText">
-                    WhatsApp
-                  </label>
+                  <label className="pb-3 inline-block text-base">WhatsApp</label>
                   <input
-                    type="text"
-                    placeholder="(DDD) 9 0000-0000"
-                    className="w-full px-4 py-2.5 rounded-lg border border-border dark:border-dark_border dark:bg-darkmode dark:text-white focus:border-primary focus:outline-0"
+                    name="whatsapp"
+                    value={formData.whatsapp}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 rounded-lg border"
                   />
                 </div>
               </div>
 
-              {/* TIPO DE SOLUÇÃO */}
+              {/* SOLUÇÃO */}
               <div className="my-2.5 w-full">
-                <label className="pb-3 inline-block text-base text-SlateBlueText">
-                  Qual tipo de solução você busca?
+                <label className="pb-3 inline-block text-base">
+                  Tipo de solução
                 </label>
-                <select className="w-full px-4 py-2.5 rounded-lg border border-border dark:border-dark_border dark:bg-darkmode dark:text-white focus:border-primary focus:outline-0">
-                  <option value="">Selecione uma opção</option>
+                <select
+                  name="solucao"
+                  value={formData.solucao}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-lg border"
+                >
+                  <option value="">Selecione</option>
                   <option>Sistema sob medida</option>
                   <option>Automação de processos</option>
                   <option>Agentes de IA</option>
@@ -90,23 +143,40 @@ const ContactForm = () => {
 
               {/* MENSAGEM */}
               <div className="my-2.5 w-full">
-                <label className="pb-3 inline-block text-base text-SlateBlueText">
-                  Descreva brevemente seu desafio*
+                <label className="pb-3 inline-block text-base">
+                  Descreva seu desafio*
                 </label>
                 <textarea
+                  name="mensagem"
+                  value={formData.mensagem}
+                  onChange={handleChange}
+                  required
                   rows={4}
-                  placeholder="Ex: processos manuais, sistemas que não se conversam, dificuldade em escalar operações, necessidade de automação ou relatórios..."
-                  className="w-full px-4 py-3 rounded-lg border border-border dark:border-dark_border dark:bg-darkmode dark:text-white focus:border-primary focus:outline-0 resize-none"
+                  className="w-full px-4 py-3 rounded-lg border resize-none"
                 />
               </div>
+
+              {/* FEEDBACK */}
+              {success && (
+                <p className="text-green-600 mt-3">
+                  ✅ Mensagem enviada com sucesso!
+                </p>
+              )}
+
+              {error && (
+                <p className="text-red-600 mt-3">
+                  ❌ {error}
+                </p>
+              )}
 
               {/* BOTÃO */}
               <div className="my-4 w-full">
                 <button
                   type="submit"
-                  className="btn btn-1 hover-filled-slide-down overflow-hidden rounded-lg"
+                  disabled={loading}
+                  className="w-full py-4 px-9 text-lg font-medium bg-primary hover:bg-blue-700 rounded-lg text-white"
                 >
-                  <span>Solicitar diagnóstico</span>
+                  {loading ? "Enviando..." : "Solicitar diagnóstico"}
                 </button>
               </div>
             </form>
@@ -119,7 +189,6 @@ const ContactForm = () => {
               alt="Contato Qnext"
               width={1300}
               height={0}
-              quality={100}
               style={{ width: "100%", height: "auto" }}
               className="rounded-lg"
             />

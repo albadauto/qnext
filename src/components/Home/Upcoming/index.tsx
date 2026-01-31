@@ -81,7 +81,7 @@ const AboutQnext = () => {
           className="text-center mt-20"
         >
           <Link
-            href="/contato"
+            href="/contact"
             className="btn_outline btn-2 btn_outline hover-outline-slide-down"
           >
             <span>Falar sobre meu sistema</span>
